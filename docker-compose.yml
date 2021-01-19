@@ -6,16 +6,24 @@ services:
     ports: 
       - "8111:8111"
     environment:
-      - TEAMCITY_SERVER_MEM_OPTS=-Xmx1g -XX:MaxPermSize=270m -XX:ReservedCodeCacheSize=350m
+      - TEAMCITY_SERVER_MEM_OPTS=-Xmx3g -XX:ReservedCodeCacheSize=450m
     volumes:
       - ./tmp/server/datadir:/data/teamcity_server/datadir
       - ./tmp/server/logs:/opt/teamcity/logs
     expose:
       - "8111"
+    networks:
+      - teamcity-network
   teamcity-agent:
     image: jetbrains/teamcity-agent
     container_name: teamcity-agent
     environment:
-     - SERVER_URL=http://127.0.0.1:8111
+     - SERVER_URL=http://teamcity-server:8111
     volumes:
      - ./tmp/agent/conf:/data/teamcity_agent/conf
+    networks:
+      - teamcity-network
+
+networks:
+  teamcity-network:
+    driver: bridge
